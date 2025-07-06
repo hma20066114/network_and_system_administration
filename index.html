@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Equipment</title>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Custom Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Basic Styles --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        a {
+            color: #4f46e5;
+            text-decoration: none;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        /* --- Header & Navigation --- */
+        .main-header {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .main-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4rem;
+        }
+
+        .nav-logo a {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .nav-links {
+            display: none;
+            /* Hidden on mobile by default */
+        }
+
+        .nav-links a {
+            padding: 0.5rem 1rem;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        #mobile-menu-button {
+            display: block;
+            /* Shown on mobile by default */
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        #mobile-menu-button svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            stroke: #6b7280;
+        }
+
+        #mobile-menu {
+            display: none;
+            background-color: #ffffff;
+            padding: 0.5rem;
+            border-top: 1px solid #eeeeee;
+        }
+
+        #mobile-menu a {
+            display: block;
+            padding: 0.75rem 1rem;
+        }
+
+        /* --- Page Views --- */
+        main {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* --- Home Page --- */
+        .home-header {
+            background: #ffffff;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .home-header h1 {
+            font-size: 2rem;
+            color: #1f2937;
+        }
+
+        #search-bar {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        #item-list {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+
+        .product-card {
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-card-content {
+            padding: 1rem;
+        }
+
+        .product-card h3 {
+            font-size: 1.125rem;
+        }
+
+        .product-card-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .product-card .price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #4f46e5;
+        }
+
+        .star-rating {
+            color: #fbbf24;
+        }
+
+        /* --- Product Detail Page --- */
+        #product-detail {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .product-detail-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+        }
+
+        #main-product-image {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .thumbnail-gallery {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .thumbnail-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .thumbnail-image.active {
+            border-color: #4f46e5;
+        }
+
+        .product-info h1 {
+            font-size: 2rem;
+        }
+
+        .product-info .price {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #4f46e5;
+            margin: 1rem 0;
+        }
+
+        .product-info .details {
+            margin-bottom: 1.5rem;
+        }
+
+        .product-info h3 {
+            margin-top: 1.5rem;
+        }
+
+        .product-info .features-list {
+            list-style: none;
+            margin-top: 0.5rem;
+        }
+
+        .product-info .features-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .product-info .features-list span:first-child {
+            color: #10b981;
+            margin-right: 0.5rem;
+        }
+
+        /* --- Reservation Form --- */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* --- Button --- */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: none;
+            border-radius: 8px;
+            background-color: #4f46e5;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #4338ca;
+        }
+
+        /* --- Modal --- */
+        #success-modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none;
+            /* Initially hidden */
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal-content h3 {
+            color: #10b981;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- Footer --- */
+        .main-footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+        }
+
+        /* --- Responsive Layout --- */
+        @media (min-width: 768px) {
+            .nav-links {
+                display: block;
+            }
+
+            #mobile-menu-button,
+            #mobile-menu {
+                display: none;
+            }
+
+            #item-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .product-detail-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            #item-list {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <nav class="container main-nav">
+            <div class="nav-logo">
+                <a href="#home" class="nav-link">Fitness</a>
+            </div>
+            <div class="nav-links">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#reservation" class="nav-link">Reserve Item</a>
+            </div>
+            <button id="mobile-menu-button">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+                    <path d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </nav>
+        <div id="mobile-menu">
+            <a href="#home" class="nav-link">Home Page</a>
+            <a href="#reservation" class="nav-link">Reserve Item</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Home Page -->
+        <div id="home" class="page active">
+            <div class="home-header">
+                <h1>Top-Tier Fitness Gear</h1>
+                <p>Browse our selection of top-tier fitness equipment.</p>
+                <input type="text" id="search-bar" placeholder="Search for equipment...">
+            </div>
+            <div id="item-list">
+                <!-- Products will be added here by JS -->
+            </div>
+        </div>
+
+        <!-- Product Detail Page -->
+        <div id="product-detail" class="page">
+            <!-- Product details will be added here by JS -->
+        </div>
+
+        <!-- Reservation Page -->
+        <div id="reservation" class="page">
+            <div class="form-container">
+                <h2>Reserve an Item</h2>
+                <form id="reservation-form">
+                    <div class="form-group">
+                        <label for="reserve-item-name">Item to Reserve</label>
+                        <select id="reserve-item-name" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="full-name">Full Name</label>
+                        <input type="text" id="full-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pickup-date">Preferred Pickup Date</label>
+                        <input type="date" id="pickup-date" required>
+                    </div>
+                    <button type="submit" class="btn">Submit Reservation</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <p>&copy; 2024 Fitness Equipment. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Success Modal -->
+    <div id="success-modal">
+        <div class="modal-content">
+            <h3>Success!</h3>
+            <p id="modal-message"></p>
+            <button id="close-modal" class="btn">Close</button>
+        </div>
+    </div>
+
+
+    <script>
+        $(document).ready(function () {
+
+            // --- PRODUCT DATA ---
+            const equipmentData = [
+                {
+                    id: 'treadmill-pro-5000',
+                    name: 'Treadmill Pro 5000',
+                    price: 1499.99,
+                    rating: 4.5,
+                    details: 'The Treadmill Pro 5000 offers a premium running experience with a powerful motor, spacious deck, and interactive training programs.',
+                    features: ['3.5 CHP Motor', '22" x 60" Tread Belt', '10" HD Touchscreen', '0-12% Incline'],
+                    images: ['images/trademill.png', 'images/trademill2.png'],
+                },
+                {
+                    id: 'adjustable-dumbbell-set',
+                    name: 'Adjustable Dumbbell Set',
+                    price: 399.99,
+                    rating: 5.0,
+                    details: 'Save space with our adjustable dumbbell set. Replaces 15 sets of weights. Quickly switch from 5 lbs to 52.5 lbs with a simple dial turn.',
+                    features: ['Adjusts from 5 to 52.5 lbs', 'Easy-to-use selection dials', 'Includes storage trays'],
+                    images: ['images/dumbells.jpg'],
+                },
+                {
+                    id: 'elite-rowing-machine',
+                    name: 'Elite Rowing Machine',
+                    price: 899.00,
+                    rating: 4.8,
+                    details: 'Experience a full-body workout with the Elite Rowing Machine. Its fluid resistance system provides a smooth and quiet rowing stroke.',
+                    features: ['Water resistance system', 'Multi-function performance monitor', 'Folds for easy storage'],
+                    images: ['images/rower.png'],
+                },
+                {
+                    id: 'yoga-mat-premium',
+                    name: 'Premium Yoga Mat',
+                    price: 49.99,
+                    rating: 4.9,
+                    details: 'Our Premium Yoga Mat provides excellent grip and cushioning. Made from eco-friendly, non-toxic materials.',
+                    features: ['72" L x 24" W', '6mm thick for comfort', 'Includes carrying strap'],
+                    images: ['images/yogamat.jpg'],
+                }
+            ];
+
+            // --- PAGE DISPLAY LOGIC ---
+
+            // Function to build and show all product cards
+            function populateItemList(items) {
+                const itemList = $('#item-list');
+                itemList.empty(); // Clear old items
+
+                if (items.length === 0) {
+                    itemList.html('<p>No items match your search.</p>');
+                    return;
+                }
+
+                items.forEach(function (item) {
+                    const cardHtml = `
+                <div class="product-card">
+                    <a href="#product-detail?id=${item.id}" class="product-link">
+                        <img src="${item.images[0]}" alt="${item.name}">
+                        <div class="product-card-content">
+                            <h3>${item.name}</h3>
+                            <div class="product-card-info">
+                                <p class="price">$${item.price.toFixed(2)}</p>
+                                <div class="star-rating">${'&#9733;'.repeat(Math.round(item.rating))}</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            `;
+                    itemList.append(cardHtml);
+                });
+            }
+
+            // Function to show the details for a single product
+            function showProductDetail(itemId) {
+                const item = equipmentData.find(d => d.id === itemId);
+                if (!item) {
+                    window.location.hash = '#home'; // Go home if item not found
+                    return;
+                }
+
+                let featuresHtml = '';
+                item.features.forEach(function (feature) {
+                    featuresHtml += `<li><span>&#10003;</span> ${feature}</li>`;
+                });
+
+                let thumbnailsHtml = '';
+                item.images.forEach(function (img, index) {
+                    const activeClass = index === 0 ? 'active' : '';
+                    thumbnailsHtml += `<img src="${img}" class="thumbnail-image ${activeClass}" alt="Thumbnail of ${item.name}">`;
+                });
+
+                const detailHtml = `
+            <div class="product-detail-grid">
+                <div>
+                    <img id="main-product-image" src="${item.images[0]}" alt="${item.name}">
+                    <div class="thumbnail-gallery">${thumbnailsHtml}</div>
+                </div>
+                <div class="product-info">
+                    <a href="#home" class="nav-link">&larr; Back to all products</a>
+                    <h1>${item.name}</h1>
+                    <p class="price">$${item.price.toFixed(2)}</p>
+                    <p class="details">${item.details}</p>
+                    <h3>Features</h3>
+                    <ul class="features-list">${featuresHtml}</ul>
+                    <button class="btn reserve-now-btn" data-id="${item.id}">Reserve Now</button>
+                </div>
+            </div>
+        `;
+                $('#product-detail').html(detailHtml);
+            }
+
+            // Function to fill the dropdown in the reservation form
+            function populateReservationDropdown() {
+                const select = $('#reserve-item-name');
+                select.empty().append('<option value="" disabled selected>Select an item...</option>');
+                equipmentData.forEach(function (item) {
+                    select.append(`<option value="${item.id}">${item.name}</option>`);
+                });
+            };
+
+            // Main router function to show the correct page
+            function handleRouteChange() {
+                const hash = window.location.hash || '#home';
+                const [pageId, queryString] = hash.substring(1).split('?');
+                const params = new URLSearchParams(queryString);
+
+                // Hide all pages, then show the active one
+                $('.page').removeClass('active');
+                $('#' + pageId).addClass('active');
+
+                if (pageId === 'product-detail') {
+                    showProductDetail(params.get('id'));
+                }
+
+                window.scrollTo(0, 0); // Scroll to top
+            }
+
+            // --- EVENT LISTENERS ---
+
+            // Search bar input
+            $('#search-bar').on('keyup', function () {
+                const searchTerm = $(this).val().toLowerCase();
+                const filteredItems = equipmentData.filter(function (item) {
+                    return item.name.toLowerCase().includes(searchTerm);
+                });
+                populateItemList(filteredItems);
+            });
+
+            // Reservation form submission
+            $('#reservation-form').on('submit', function (e) {
+                e.preventDefault();
+                const itemName = $('#reserve-item-name option:selected').text();
+                $('#modal-message').text(`Your reservation for the ${itemName} has been confirmed.`);
+                $('#success-modal').css('display', 'flex');
+                this.reset();
+            });
+
+            // Close the success modal
+            $('#close-modal').on('click', function () {
+                $('#success-modal').hide();
+            });
+
+            // Handle all navigation clicks (e.g. #home, #product-detail, etc.)
+            $(document).on('click', '.nav-link, .product-link', function (e) {
+                e.preventDefault();
+                window.location.hash = $(this).attr('href');
+                $('#mobile-menu').hide(); // Hide mobile menu on click
+            });
+
+            // "Reserve Now" button on product detail page
+            $(document).on('click', '.reserve-now-btn', function () {
+                const itemId = $(this).data('id');
+                populateReservationDropdown(); // Make sure dropdown is up to date
+                $('#reserve-item-name').val(itemId);
+                window.location.hash = '#reservation'; // Go to reservation page
+            });
+
+            // Thumbnail image clicks in the gallery
+            $(document).on('click', '.thumbnail-image', function () {
+                $('#main-product-image').attr('src', $(this).attr('src'));
+                $('.thumbnail-image').removeClass('active');
+                $(this).addClass('active');
+            });
+
+            // Mobile menu toggle button
+            $('#mobile-menu-button').on('click', function () {
+                $('#mobile-menu').toggle();
+            });
+
+            // --- INITIALIZATION ---
+            populateItemList(equipmentData); // Show all products on first load
+            populateReservationDropdown(); // Prepare the reservation form
+
+            // Listen for hash changes in the URL to switch pages
+            $(window).on('hashchange', handleRouteChange);
+
+            // Trigger the router on initial page load
+            handleRouteChange();
+        });
+    </script>
+
+</body>
+
+</html>

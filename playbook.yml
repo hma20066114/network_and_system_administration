@@ -1,0 +1,90 @@
+---
+- name: Configure Server and Deploy Custom Docker Container
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: 'Update apt package cache and install prerequisites'
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+        state: present
+        update_cache: yes
+
+    - name: 'Create a directory for the Docker GPG key'
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: 'Download the Docker GPG key'
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /tmp/docker.gpg
+        mode: '0644'
+
+    - name: 'Convert GPG key to the correct format'
+      ansible.builtin.command:
+        cmd: gpg --dearmor -o /etc/apt/keyrings/docker.gpg /tmp/docker.gpg
+        creates: /etc/apt/keyrings/docker.gpg
+
+    - name: 'Add the Docker repository to APT sources'
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: 'Install Docker Engine, CLI, and containerd'
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+        update_cache: yes
+
+    - name: 'Ensure the Docker service is started and enabled on boot'
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: 'Add remote user to the "docker" group'
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    # CORRECTED: This task now uses the 'docker_image' variable from the pipeline
+    - name: 'Pull the custom application image from a registry'
+      community.docker.docker_image:
+        name: "{{ docker_image }}"
+        source: pull
+
+    - name: AGGRESSIVE CLEANUP - Stop and remove all possible old containers
+      community.docker.docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - custom-web-app
+        - web-app
+        - web-app-verify
+        - fitness-website
+
+    # CORRECTED: This task also uses the 'docker_image' variable
+    - name: 'Run the custom application container'
+      community.docker.docker_container:
+        name: fitness-website
+        image: "{{ docker_image }}"
+        state: started
+        restart_policy: always
+        ports:
+          - "80:80"
+          
+    - name: 'Run the Nginx container'
+      community.docker.docker_container:
+        name: nginx-website
+        image: "nginx:latest"
+        state: restarted  # <-- Change this line
+        restart_policy: always
+        ports:
+          - "80:80"

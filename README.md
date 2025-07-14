@@ -1,13 +1,22 @@
 Automated Deployment of a Web Application on AWS
+----------------------------------------------------
 This repository contains the complete code and configuration for a project that demonstrates an end-to-end automated deployment of a containerized web application onto AWS infrastructure. The project utilizes a modern DevOps toolchain to handle everything from infrastructure provisioning to continuous deployment.
 
+
+
+
+
+
+
 Architecture Diagram
+-----------------------
 The following diagram illustrates the complete workflow, from a developer committing code to the application being served to the end-user.
 
 <img width="1266" height="543" alt="image" src="https://github.com/user-attachments/assets/d3d23686-264b-489d-8d79-605f3d2c2150" />
 
 
 Technologies Used
+-----------------------
 Cloud Provider: Amazon Web Services (AWS)
 
 Infrastructure as Code: Terraform
@@ -18,26 +27,13 @@ Containerization: Docker
 
 CI/CD Pipeline: GitHub Actions
 
-Project Structure
-.
-├── .github/
-│   └── workflows/
-│       └── deploy.yml      # GitHub Actions pipeline configuration
-├── app/
-│   └── index.html          # The source code for the website
-├── ansible.cfg             # Ansible configuration to disable SSH host key checking
-├── Dockerfile              # Instructions to build the Nginx container image
-├── inventory.ini           # Ansible inventory file for connecting to the server
-├── main.tf                 # Main Terraform file for provisioning AWS resources
-├── outputs.tf              # Terraform output definitions
-├── playbook.yml            # Ansible playbook for server configuration and deployment
-├── provider.tf             # Terraform AWS provider configuration
-└── README.md               # This file
 
 How to Run Manually
+---------------------------
 These steps allow you to deploy the entire stack from your local machine without using the CI/CD pipeline.
 
 Prerequisites
+--------------------------
 AWS Account and configured AWS CLI
 
 Terraform installed
@@ -118,6 +114,7 @@ Sets up an SSH key to connect to the EC2 instance.
 Runs the playbook.yml, passing the new, unique Docker image tag as a variable. This ensures the latest version of the code is always deployed.
 
 Configuration
+------------------
 For the pipeline to work, the following secrets must be configured in your GitHub repository under Settings > Secrets and variables > Actions:
 
 DOCKERHUB_USERNAME: Your Docker Hub username.
